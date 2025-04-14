@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Memory Maze</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #1e1e2f;
+      color: #f0f0f0;
+      padding: 2rem;
+      max-width: 600px;
+      margin: auto;
+    }
+    h1 {
+      text-align: center;
+    }
+    .room {
+      margin-bottom: 2rem;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    button {
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+    }
+    .result {
+      margin-top: 2rem;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧠 MEMORY MAZE 🧩</h1>
+  <div id="game"></div>
+
+  <script>
+    const rooms = [
+      { name: "Room of Reversed Time", riddle: "I shrink when you speak. What am I?", answer: "silence" },
+      { name: "Mirror Loop", riddle: "What can fill a room but takes up no space?", answer: "light" },
+      { name: "Library of Echoes", riddle: "The more you take, the more you leave behind. What am I?", answer: "footsteps" },
+      { name: "Glitched Hallway", riddle: "What has keys but can’t open locks?", answer: "piano" },
+      { name: "Chamber of Forgotten Names", riddle: "What gets wetter the more it dries?", answer: "towel" }
+    ];
+
+    const visited = [];
+    let correct = 0;
+    const numRiddles = 4;
+
+    const gameDiv = document.getElementById("game");
+
+    function shuffle(array) {
+      return array.sort(() => Math.random() - 0.5);
+    }
+
+    const shuffledRooms = shuffle([...rooms]).slice(0, numRiddles);
+
+    let currentIndex = 0;
+
+    function showNextRoom() {
+      if (currentIndex >= numRiddles) {
+        showResults();
+        return;
+      }
+
+      const room = shuffledRooms[currentIndex];
+      gameDiv.innerHTML = `
+        <div class="room">
+          <h2>${room.name}</h2>
+          <p>${room.riddle}</p>
+          <input type="text" id="answerInput" placeholder="Your answer..." />
+          <button onclick="submitAnswer()">Submit</button>
+        </div>
+      `;
+    }
+
+    function submitAnswer() {
+      const input = document.getElementById("answerInput").value.trim().toLowerCase();
+      const correctAnswer = shuffledRooms[currentIndex].answer;
+
+      let feedback = "";
+      if (input === correctAnswer) {
+        feedback = "Correct!";
+        correct++;
+      } else {
+        feedback = `Wrong! The answer was: ${correctAnswer}`;
+      }
+
+      currentIndex++;
+      setTimeout(() => {
+        alert(feedback);
+        showNextRoom();
+      }, 100);
+    }
+
+    function showResults() {
+      let endMessage = "";
+      if (correct === numRiddles) {
+        endMessage = "Perfect escape! You mastered the maze.";
+      } else if (correct >= 2) {
+        endMessage = "You escaped... barely.";
+      } else {
+        endMessage = "You are lost in the maze forever...";
+      }
+
+      gameDiv.innerHTML = `
+        <div class="result">
+          <h2>=== GAME OVER ===</h2>
+          <p>You solved ${correct} out of ${numRiddles} riddles correctly.</p>
+          <p>${endMessage}</p>
+        </div>
+      `;
+    }
+
+    showNextRoom();
+  </script>
+</body>
+</html>
